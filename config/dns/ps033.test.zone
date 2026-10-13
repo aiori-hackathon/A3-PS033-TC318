@@ -1,0 +1,24 @@
+$ORIGIN ps033.test.
+$TTL 60
+@  IN SOA ns.ps033.test. hostmaster.ps033.test. (
+       2026101301 ; serial - increment for every zone change
+       3600       ; refresh
+       900        ; retry
+       604800     ; expire
+       60         ; negative cache TTL
+)
+   IN NS ns.ps033.test.
+ns IN A 127.0.0.1
+
+; DNS-AID-related transport discovery uses SVCB ServiceMode (priority 1).
+; The diagnostic route names below are a lab-specific extension, not DNS-AID agent records.
+latency IN SVCB 1 latency-api.ps033.test. alpn="http/1.1" port=8443
+connectivity IN SVCB 1 connectivity-api.ps033.test. alpn="http/1.1" port=8444
+routing IN SVCB 1 routing-api.ps033.test. alpn="http/1.1" port=8445
+
+latency-api       IN A 127.0.0.1
+connectivity-api  IN A 127.0.0.1
+routing-api       IN A 127.0.0.1
+
+; Allowed target for simulated checks; no packets are sent to this host.
+lab-target IN A 192.0.2.20

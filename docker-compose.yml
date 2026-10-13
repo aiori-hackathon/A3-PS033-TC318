@@ -1,0 +1,57 @@
+name: ps033-lab
+services:
+  bind9:
+    image: internetsystemsconsortium/bind9:9.20
+    container_name: ps033-bind9
+    restart: unless-stopped
+    volumes:
+      - ./config/dns/named.conf:/etc/bind/named.conf:ro
+      - ./config/dns/ps033.test.signed:/etc/bind/ps033.test.signed:ro
+    ports:
+      - "127.0.0.1:5354:53/udp"
+      - "127.0.0.1:5354:53/tcp"
+    networks: [ps033]
+
+  unbound:
+    image: mvance/unbound:1.22.0
+    container_name: ps033-unbound
+    restart: unless-stopped
+    depends_on: [bind9]
+    volumes:
+      - ./config/dns/unbound.conf:/opt/unbound/etc/unbound/unbound.conf:ro
+      - ./config/dns/ps033-trust-anchor.key:/opt/unbound/ps033-trust-anchor.key:ro
+    ports:
+      - "127.0.0.1:5353:53/udp"
+      - "127.0.0.1:5353:53/tcp"
+    networks: [ps033]
+
+  latency:
+    build: .
+    env_file: .env
+    environment: { SERVICE_KIND: latency }
+    volumes: ["./config/certs:/run/certs:ro"]
+    ports: ["8443:8443"]
+    restart: unless-stopped
+    networks: [ps033]
+
+  connectivity:
+    build: .
+    env_file: .env
+    environment: { SERVICE_KIND: connectivity }
+    volumes: ["./config/certs:/run/certs:ro"]
+    ports: ["8444:8443"]
+    restart: unless-stopped
+    networks: [ps033]
+
+  routing:
+    build: .
+    env_file: .env
+    environment: { SERVICE_KIND: routing }
+    volumes: ["./config/certs:/run/certs:ro"]
+    ports: ["8445:8443"]
+    restart: unless-stopped
+    networks: [ps033]
+
+networks:
+  ps033:
+    driver: bridge
