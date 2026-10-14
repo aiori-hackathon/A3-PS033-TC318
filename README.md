@@ -610,3 +610,6 @@ These references provide background standards and proposals; they do not imply t
 ---
 
 **TrustDiag — discover carefully, validate trust, authenticate clients, authorize operations, and audit diagnostic activity.**
+
+
+Youtube link: https://youtu.be/Mebot3Ml8wA?si=yXl2z_Th-XfmfqbJ
